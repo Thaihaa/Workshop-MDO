@@ -1,0 +1,104 @@
+baseURL = "https://USERNAME.github.io/REPOSITORY-NAME/"
+languageCode = "en-us"
+defaultContentLanguage = "en"
+
+title = "Restaurant Microservices Deployment Orchestration Workshop"
+theme = "hugo-theme-learn"
+themesdir = "themes"
+metaDataFormat = "yaml"
+defaultContentLanguageInSubdir= true
+
+[params]
+  # Prefix URL to edit current page. Will display an "Edit this page" button on top right hand corner of every page. 
+  # Useful to give opportunity to people to create merge request for your doc.
+  # See the config.toml file from this documentation site to have an example.
+  editPage = false
+  # Author of the site, will be used in meta information
+  author = "AWS Workshop Team"
+  # Description of the site, will be used in meta information
+  description = "Learn to orchestrate microservices deployment with AWS Step Functions"
+  # Shows a checkmark for visited pages on the menu
+  showVisitedLinks = false
+  # Disable search function. It will hide search bar
+  disableSearch = false
+  # Javascript and CSS cache are automatically busted when new version of site is generated. 
+  # Set this to true to disable this behavior (some proxies don't handle well this optimization)
+  disableAssetsBusting = false
+  # Set this to true to disable copy-to-clipboard button for inline code.
+  disableInlineCopyToClipBoard = false
+  # A title for shortcuts in menu is set by default. Set this to true to disable it. 
+  disableShortcutsTitle = false
+  # When using mulitlingual website, disable the switch language button.
+  disableLanguageSwitchingButton = false
+  # Hide breadcrumbs in the header and only show the current page title
+  disableBreadcrumb = true
+  # Hide Next and Previous page buttons normally displayed full height beside content
+  disableNextPrev = false
+  # Order sections in menu by "weight" or "title". Default to "weight"
+  ordersectionsby = "weight"
+  # Change default color scheme with a variant one. Can be "red", "blue", "green".
+  themeVariant = "workshop"
+
+[outputs]
+home = [ "HTML", "RSS", "JSON"]
+
+[Languages]
+[Languages.en]
+title = "Restaurant Microservices Deployment Orchestration Workshop"
+weight = 1
+languageName = "English"
+
+[[Languages.en.menu.shortcuts]]
+name = "<i class='fab fa-github'></i> GitHub Repo"
+identifier = "ds"
+url = "https://github.com/aws-samples/restaurant-deployment-workshop"
+weight = 10
+
+[[Languages.en.menu.shortcuts]]
+name = "<i class='fas fa-camera'></i> Workshop Images"
+url = "https://github.com/aws-samples/restaurant-deployment-workshop/tree/main/images"
+weight = 11
+
+[[Languages.en.menu.shortcuts]]
+name = "<i class='fas fa-bookmark'></i> AWS Step Functions"
+identifier = "hugodoc"
+url = "https://aws.amazon.com/step-functions/"
+weight = 20
+
+[[Languages.en.menu.shortcuts]]
+name = "<i class='fas fa-bullhorn'></i> Credits"
+url = "/credits"
+weight = 30
+
+[Languages.vi]
+title = "Workshop Orchestration Deployment Microservices Nhà hàng"
+weight = 2
+languageName = "Tiếng Việt"
+
+[[Languages.vi.menu.shortcuts]]
+name = "<i class='fab fa-github'></i> GitHub Repo"
+identifier = "ds"
+url = "https://github.com/aws-samples/restaurant-deployment-workshop"
+weight = 10
+
+[[Languages.vi.menu.shortcuts]]
+name = "<i class='fas fa-camera'></i> Hình ảnh Workshop"
+url = "https://github.com/aws-samples/restaurant-deployment-workshop/tree/main/images"
+weight = 11
+
+[[Languages.vi.menu.shortcuts]]
+name = "<i class='fas fa-bookmark'></i> AWS Step Functions"
+identifier = "hugodoc"
+url = "https://aws.amazon.com/step-functions/"
+weight = 20
+
+[[Languages.vi.menu.shortcuts]]
+name = "<i class='fas fa-bullhorn'></i> Credits"
+url = "/vi/credits"
+weight = 30
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
