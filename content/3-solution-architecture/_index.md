@@ -1,260 +1,174 @@
 ---
-title: "3. Solution Architecture Design"
+title: "3. Kiến trúc Giải pháp"
 date: 2023-07-12T11:02:05+06:00
 weight: 30
 chapter: false
 ---
 
-## Learning Objective  
-Learn systematic approach to design technical architecture that addresses business requirements.
+## Tổng quan về Kiến trúc
 
-## Architecture Decision Framework (7 phút)
+Trong phần này, chúng ta sẽ thiết kế kiến trúc giải pháp cho hệ thống tự động hóa triển khai microservices. Kiến trúc này dựa trên các yêu cầu đã được xác định trong phần trước và sử dụng các dịch vụ AWS để xây dựng một giải pháp toàn diện.
 
-**📸 IMAGE NEEDED: Decision Framework Diagram**
-*Chụp flowchart showing: Requirements → Constraints → Options → Evaluation → Decision → Documentation*
+## Nguyên tắc Thiết kế
 
-### Hands-on: Technology Selection Workshop
+1. **Tự động hóa tối đa**: Giảm thiểu sự can thiệp thủ công trong quy trình triển khai
+2. **Khả năng mở rộng**: Thiết kế để hỗ trợ số lượng microservices và triển khai ngày càng tăng
+3. **Khả năng phục hồi**: Đảm bảo hệ thống có thể phục hồi từ lỗi một cách nhanh chóng
+4. **Khả năng quan sát**: Cung cấp khả năng giám sát và ghi nhật ký toàn diện
+5. **Bảo mật theo thiết kế**: Tích hợp các biện pháp bảo mật vào mọi thành phần
 
-#### Step 1: Service Mapping Exercise (2 phút)
-```markdown
-Draw service relationship diagram on whiteboard:
+## Kiến trúc Tổng thể
 
-Authentication Service
-├── Required by: Order, Payment
-├── Dependencies: None
-├── Criticality: High
-└── Deployment time: 2 min
+![Kiến trúc Tổng thể](/images/architecture/high-level-architecture.png)
 
-Order Service  
-├── Required by: Payment, Notification
-├── Dependencies: Authentication
-├── Criticality: High
-└── Deployment time: 3 min
+Kiến trúc giải pháp bao gồm các thành phần chính sau:
 
-Payment Service
-├── Required by: Notification
-├── Dependencies: Authentication, Order
-├── Criticality: Critical
-└── Deployment time: 2 min
+1. **Quản lý Mã nguồn**: AWS CodeCommit hoặc GitHub
+2. **Pipeline CI/CD**: AWS CodePipeline
+3. **Điều phối Workflow**: AWS Step Functions
+4. **Thực thi Nhiệm vụ**: AWS Lambda
+5. **Quản lý Container**: Amazon ECS/EKS
+6. **Giám sát và Cảnh báo**: Amazon CloudWatch
+7. **Lưu trữ Cấu hình**: AWS Systems Manager Parameter Store
+8. **Quản lý Bí mật**: AWS Secrets Manager
 
-Notification Service
-├── Required by: None
-├── Dependencies: Order, Payment (optional)
-├── Criticality: Medium  
-└── Deployment time: 1 min
-```
+## Thành phần Chi tiết
 
-#### Step 2: Orchestration Technology Evaluation (3 phút)
+### 1. Quản lý Mã nguồn
+- **Dịch vụ AWS**: AWS CodeCommit hoặc tích hợp với GitHub
+- **Chức năng**: Lưu trữ mã nguồn cho microservices và cấu hình triển khai
+- **Lợi ích**: Kiểm soát phiên bản, theo dõi thay đổi, và tích hợp với CI/CD
 
-**📸 IMAGE NEEDED: Technology Comparison Matrix**
-*Chụp comparison table giữa AWS Step Functions, Jenkins, GitHub Actions, custom solution*
+### 2. Pipeline CI/CD
+- **Dịch vụ AWS**: AWS CodePipeline, CodeBuild
+- **Chức năng**: Tự động hóa quy trình build, kiểm thử, và triển khai
+- **Lợi ích**: Quy trình nhất quán, kiểm thử tự động, và phát hiện lỗi sớm
 
-```markdown
-Evaluation Matrix:
+### 3. Điều phối Workflow
+- **Dịch vụ AWS**: AWS Step Functions
+- **Chức năng**: Điều phối các bước triển khai, quản lý phụ thuộc, và xử lý lỗi
+- **Lợi ích**: Quy trình có thể tái sử dụng, khả năng theo dõi trạng thái, và xử lý lỗi tự động
 
-| Criteria | AWS Step Functions | Jenkins Pipeline | GitHub Actions | Custom Lambda |
-|----------|-------------------|------------------|----------------|---------------|
-| Visual Workflow | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐ |
-| Error Handling | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| AWS Integration | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Cost | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Maintenance | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
-| Learning Curve | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐ |
-| Scalability | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+### 4. Thực thi Nhiệm vụ
+- **Dịch vụ AWS**: AWS Lambda
+- **Chức năng**: Thực hiện các nhiệm vụ cụ thể như xác thực, triển khai, và kiểm tra sức khỏe
+- **Lợi ích**: Không máy chủ, khả năng mở rộng tự động, và chi phí theo sử dụng
 
-Scoring: 5=Excellent, 4=Good, 3=Average, 2=Below Average, 1=Poor
+### 5. Quản lý Container
+- **Dịch vụ AWS**: Amazon ECS/EKS
+- **Chức năng**: Triển khai và quản lý các microservices dựa trên container
+- **Lợi ích**: Triển khai nhất quán, khả năng mở rộng, và quản lý tài nguyên hiệu quả
 
-Total Scores:
-- AWS Step Functions: 32/35
-- Jenkins Pipeline: 19/35  
-- GitHub Actions: 24/35
-- Custom Lambda: 23/35
+### 6. Giám sát và Cảnh báo
+- **Dịch vụ AWS**: Amazon CloudWatch, CloudTrail
+- **Chức năng**: Giám sát hiệu suất, ghi nhật ký, và cảnh báo
+- **Lợi ích**: Khả năng quan sát thời gian thực, phát hiện vấn đề sớm, và phân tích xu hướng
 
-Selected: AWS Step Functions
-```
+### 7. Lưu trữ Cấu hình
+- **Dịch vụ AWS**: AWS Systems Manager Parameter Store
+- **Chức năng**: Lưu trữ và quản lý cấu hình triển khai
+- **Lợi ích**: Quản lý cấu hình tập trung, kiểm soát phiên bản, và tích hợp với các dịch vụ AWS khác
 
-#### Step 3: Architecture Decision Record (2 phút)
-```markdown
-Template ADR-001: Orchestration Service Selection
+### 8. Quản lý Bí mật
+- **Dịch vụ AWS**: AWS Secrets Manager
+- **Chức năng**: Lưu trữ và quản lý thông tin nhạy cảm như mật khẩu và khóa API
+- **Lợi ích**: Bảo mật nâng cao, luân chuyển tự động, và kiểm soát truy cập
 
-Status: Proposed → Under Review → Approved → Superseded
+## Quy trình Triển khai
 
-Context:
-Need workflow orchestration for complex microservice deployments
-Current manual process is error-prone và time-consuming
-Team has moderate AWS experience
+![Quy trình Triển khai](/images/architecture/deployment-workflow.png)
 
-Decision:
-Use AWS Step Functions as primary orchestration engine
+Quy trình triển khai tự động hóa bao gồm các bước sau:
 
-Alternatives Considered:
-1. Jenkins Pipeline - rejected due to infrastructure overhead
-2. GitHub Actions - rejected due to limited AWS integration  
-3. Custom Lambda solution - rejected due to development complexity
+1. **Kích hoạt**: Nhà phát triển đẩy mã lên repository hoặc kích hoạt thủ công
+2. **Xác thực**: Kiểm tra tham số đầu vào và xác thực quyền
+3. **Sao lưu**: Sao lưu trạng thái hiện tại để khôi phục nếu cần
+4. **Xây dựng**: Biên dịch mã nguồn và tạo artifacts
+5. **Kiểm thử**: Chạy kiểm thử đơn vị và tích hợp
+6. **Triển khai**: Triển khai microservices theo thứ tự phụ thuộc
+7. **Xác minh**: Kiểm tra tính sẵn sàng của dịch vụ sau khi triển khai
+8. **Thông báo**: Thông báo cho các bên liên quan về kết quả triển khai
 
-Consequences:
-Positive:
-+ Visual workflow representation aids debugging
-+ Built-in retry logic và error handling
-+ Serverless reduces operational overhead
-+ Native AWS service integration
-+ Pay-per-use pricing model
+## Xử lý Lỗi và Khôi phục
 
-Negative:
-- AWS vendor lock-in
-- Learning curve for Step Functions DSL
-- State machine size limits
-- Cold start latency for infrequent workflows
+![Xử lý Lỗi](/images/architecture/error-handling.png)
 
-Implementation Notes:
-- Use Express Workflows for high-frequency operations
-- Implement comprehensive logging for debugging
-- Create reusable state machine templates
-```
+Chiến lược xử lý lỗi và khôi phục bao gồm:
 
-## High-Level Architecture Design (8 phút)
+1. **Phát hiện lỗi**: Giám sát liên tục để phát hiện lỗi trong quá trình triển khai
+2. **Phân loại lỗi**: Phân loại lỗi theo mức độ nghiêm trọng và loại
+3. **Thử lại tự động**: Thử lại các bước thất bại với backoff theo cấp số nhân
+4. **Khôi phục tự động**: Khôi phục về trạng thái trước khi lỗi xảy ra
+5. **Thông báo**: Thông báo cho các bên liên quan về lỗi và hành động khôi phục
+6. **Ghi nhật ký**: Ghi lại chi tiết lỗi và hành động khắc phục để phân tích sau
 
-**📸 IMAGE NEEDED: Architecture Sketching Process**
-*Chụp sequence: whiteboard sketch → digital diagram → AWS architecture icons*
+## Tích hợp với Hệ thống Hiện tại
 
-### Hands-on: Collaborative Architecture Design
+Giải pháp sẽ tích hợp với các hệ thống hiện tại của nhà hàng:
 
-#### Step 1: Component Identification (2 phút)
-```markdown
-Brainstorm essential components:
+1. **Hệ thống Quản lý Đơn hàng**: Đảm bảo khả năng tương thích với API hiện tại
+2. **Hệ thống Thanh toán**: Duy trì tích hợp với cổng thanh toán
+3. **Hệ thống Quản lý Khách hàng**: Đảm bảo dữ liệu khách hàng được bảo vệ trong quá trình triển khai
+4. **Hệ thống Báo cáo**: Cung cấp dữ liệu triển khai cho hệ thống báo cáo
+5. **Hệ thống Thông báo**: Tích hợp với hệ thống thông báo hiện tại
 
-Orchestration Layer:
-├── Step Functions State Machine
-├── Lambda Functions (controllers)
-└── CloudWatch Events (triggers)
+## Cân nhắc về Bảo mật
 
-Application Layer:
-├── ECS Services (microservices)
-├── Application Load Balancer
-└── Target Groups
+Các biện pháp bảo mật được tích hợp vào kiến trúc bao gồm:
 
-Data Layer:
-├── RDS (if needed)
-├── ElastiCache (if needed)
-└── S3 (artifacts, logs)
+1. **Kiểm soát Truy cập**: AWS IAM để quản lý quyền truy cập
+2. **Mã hóa**: Mã hóa dữ liệu trong quá trình lưu trữ và truyền tải
+3. **Quản lý Bí mật**: AWS Secrets Manager để lưu trữ thông tin nhạy cảm
+4. **Kiểm tra Bảo mật**: Quét bảo mật tự động trong pipeline CI/CD
+5. **Ghi nhật ký và Giám sát**: CloudTrail và CloudWatch để theo dõi hoạt động
 
-Monitoring Layer:
-├── CloudWatch Logs
-├── CloudWatch Metrics  
-├── CloudWatch Dashboards
-└── SNS Notifications
+## Ước tính Chi phí
 
-Security Layer:
-├── IAM Roles và Policies
-├── VPC và Security Groups
-└── AWS Secrets Manager
-```
+Ước tính chi phí hàng tháng cho giải pháp:
 
-#### Step 2: Data Flow Mapping (3 phút)
+| Dịch vụ AWS | Ước tính Chi phí (USD) | Ghi chú |
+|-------------|------------------------|---------|
+| AWS CodePipeline | $1 mỗi pipeline/tháng | 5 pipelines = $5 |
+| AWS Step Functions | $0.025 mỗi 1,000 chuyển đổi trạng thái | ~$10 với 50 triển khai/tháng |
+| AWS Lambda | $0.20 mỗi 1M yêu cầu + $0.0000166667 mỗi GB-giây | ~$15 |
+| Amazon ECS/EKS | Phụ thuộc vào kích thước cluster | ~$100 cho cluster nhỏ |
+| CloudWatch | $0.30 mỗi bảng điều khiển + chi phí nhật ký | ~$30 |
+| Các dịch vụ khác | | ~$40 |
+| **Tổng cộng** | | **~$200/tháng** |
 
-**📸 IMAGE NEEDED: Data Flow Diagram**
-*Chụp diagram showing request flow từ trigger đến completion*
+Lưu ý: Chi phí thực tế có thể thay đổi dựa trên khối lượng sử dụng và cấu hình cụ thể.
 
-```markdown
-Deployment Trigger Flow:
+## Lộ trình Triển khai
 
-1. Git Push → CodePipeline → S3 Artifact
-2. S3 Event → Lambda Trigger → Step Functions
-3. Step Functions → Deployment Initializer Lambda
-4. Initializer → ECS Service Updates (parallel)
-5. ECS → Health Check Lambda (each service)
-6. Health Check → Success/Failure → Next State
-7. Final State → Notification Lambda → SNS
-8. SNS → Email/Slack → Stakeholders
+Lộ trình triển khai giải pháp được chia thành các giai đoạn:
 
-Error Flow:
-Any Step Fails → Rollback State → Previous Versions → Notification
-```
+### Giai đoạn 1: Thiết lập Cơ bản (2 tuần)
+- Thiết lập repository mã nguồn
+- Cấu hình AWS IAM và quyền
+- Thiết lập môi trường phát triển
 
-#### Step 3: Architecture Diagram Creation (3 phút)
+### Giai đoạn 2: Xây dựng Pipeline CI/CD (3 tuần)
+- Thiết lập AWS CodePipeline
+- Cấu hình quy trình build và kiểm thử
+- Tích hợp với repository mã nguồn
 
-**📸 IMAGE NEEDED: Digital Architecture Diagram Tool**
-*Chụp draw.io hoặc Lucidchart với AWS architecture symbols*
+### Giai đoạn 3: Phát triển Workflow Triển khai (4 tuần)
+- Thiết kế và triển khai Step Functions
+- Phát triển Lambda functions
+- Thiết lập quản lý cấu hình
 
-```markdown
-Participants create digital diagram using:
-- draw.io (free, web-based)
-- AWS Architecture Icons
-- Standard notation for data flow
-- Color coding for different layers
+### Giai đoạn 4: Tích hợp và Kiểm thử (3 tuần)
+- Tích hợp với hệ thống hiện tại
+- Kiểm thử end-to-end
+- Tối ưu hóa hiệu suất
 
-Required elements:
-☐ All identified components
-☐ Data flow arrows với labels
-☐ Security boundaries (VPC, subnets)
-☐ External integrations
-☐ Monitoring touchpoints
-☐ Error handling paths
-```
+### Giai đoạn 5: Triển khai và Đào tạo (2 tuần)
+- Triển khai giải pháp vào môi trường sản xuất
+- Đào tạo đội ngũ phát triển và vận hành
+- Bàn giao tài liệu
 
-## Component Selection Matrix (10 phút)
+## Kết luận
 
-**📸 IMAGE NEEDED: Technology Comparison Matrix**
-*Chụp comparison table giữa different AWS services và alternatives*
+Kiến trúc giải pháp được đề xuất cung cấp một hệ thống toàn diện để tự động hóa triển khai microservices cho chuỗi nhà hàng. Bằng cách sử dụng các dịch vụ AWS, giải pháp đáp ứng tất cả các yêu cầu đã xác định và cung cấp một nền tảng có thể mở rộng, đáng tin cậy, và bảo mật.
 
-```markdown
-| Component | Option 1 | Option 2 | Option 3 | Selected | Rationale |
-|-----------|----------|----------|----------|----------|-----------|
-| Orchestration | Step Functions | Jenkins Pipeline | GitHub Actions | Step Functions | Serverless, visual, error handling |
-| Compute | Lambda | ECS Fargate | EC2 | Lambda | Serverless, cost-effective |
-| Container Orchestration | ECS | EKS | Fargate | ECS | Managed, cost-effective |
-| Monitoring | CloudWatch | Datadog | New Relic | CloudWatch | Native integration, cost |
-| Notifications | SNS | Slack API | Email | SNS | Multi-channel, reliable |
-```
-
-## Detailed Component Specification (5 phút)
-
-**📸 IMAGE NEEDED: Component Specification Template**
-*Chụp detailed spec sheet template với technical parameters*
-
-### Lambda Functions Specification:
-```yaml
-# lambda_functions/deployment_initializer.yaml
-name: deployment-initializer
-runtime: python3.9
-memory: 512MB
-timeout: 300 seconds
-environment_variables:
-  LOG_LEVEL: INFO
-  ECS_CLUSTER: restaurant-cluster
-permissions:
-  - ecs:UpdateService
-  - ecs:DescribeServices
-  - logs:CreateLogGroup
-triggers:
-  - step_functions
-```
-
-### Step Functions Workflow Specification:
-```json
-{
-  "Comment": "Restaurant Microservices Deployment",
-  "StartAt": "InitializeDeployment",
-  "States": {
-    "InitializeDeployment": {
-      "Type": "Task",
-      "Resource": "arn:aws:lambda:region:account:function:deployment-initializer",
-      "Next": "DeployAuthService",
-      "Retry": [
-        {
-          "ErrorEquals": ["States.TaskFailed"],
-          "IntervalSeconds": 5,
-          "MaxAttempts": 3,
-          "BackoffRate": 2.0
-        }
-      ],
-      "Catch": [
-        {
-          "ErrorEquals": ["States.ALL"],
-          "Next": "HandleFailure"
-        }
-      ]
-    }
-  }
-}
-``` 
+Trong phần tiếp theo, chúng ta sẽ xây dựng một prototype để chứng minh tính khả thi của giải pháp này. 

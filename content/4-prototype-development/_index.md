@@ -1,312 +1,296 @@
 ---
-title: "4. Prototype Development"
+title: "4. Phát triển Prototype"
 date: 2023-07-12T11:02:05+06:00
 weight: 40
 chapter: false
 ---
 
-## Learning Objective
-Build working prototype that demonstrates core functionality để support proposal credibility.
+Trong phần này, chúng ta sẽ xây dựng một prototype hoạt động để chứng minh tính khả thi của giải pháp tự động hóa triển khai microservices. Chúng ta sẽ sử dụng AWS Step Functions để điều phối quy trình triển khai và AWS Lambda để thực hiện các nhiệm vụ cụ thể.
 
-## Rapid Prototyping Strategy (8 phút)
+## 1. Tạo State Machine với AWS Step Functions
 
-**📸 IMAGE NEEDED: MVP vs Full Solution Comparison**
-*Chụp comparison table showing MVP features vs full implementation*
+### Bước 1: Truy cập AWS Step Functions Console
 
-### MVP Definition Workshop:
+1. Đăng nhập vào AWS Management Console
+2. Tìm và chọn dịch vụ "Step Functions"
+3. Nhấp vào nút "Create state machine"
 
-#### Step 1: Feature Prioritization (3 phút)
-```markdown
-Feature Categories:
+![Tạo State Machine](/images/prototype/create-state-machine.png)
 
-Must-Have (MVP):
-☐ Deploy single microservice via Step Functions
-☐ Basic health checking
-☐ Simple success/failure notification
-☐ Manual trigger capability
-☐ CloudWatch logging
+### Bước 2: Thiết kế Workflow
 
-Should-Have (v1.1):
-☐ Parallel service deployment
-☐ Automatic rollback on failure
-☐ Dependency management
-☐ Multi-environment support
+1. Chọn "Design your workflow visually" (Thiết kế workflow trực quan)
+2. Đặt tên cho state machine của bạn: `MicroservicesDeploymentOrchestrator`
+3. Chọn loại "Standard"
 
-Could-Have (v2.0):
-☐ Advanced monitoring dashboards
-☐ Slack integration
-☐ Automated testing integration
-☐ Cost optimization features
+### Bước 3: Xây dựng Sơ đồ Workflow
 
-Won't-Have (out of scope):
-☐ Custom CI/CD pipeline
-☐ Infrastructure provisioning
-☐ Database migrations
-☐ Application code changes
-```
+Chúng ta sẽ xây dựng một workflow với các bước sau:
 
-#### Step 2: Demo Scenario Planning (3 phút)
-```markdown
-Demo Scenarios for Executive Presentation:
+1. **Xác thực tham số đầu vào**: Kiểm tra các tham số đầu vào
+2. **Sao lưu trạng thái hiện tại**: Sao lưu trạng thái hiện tại
+3. **Triển khai thay đổi cơ sở dữ liệu**: Cập nhật schema cơ sở dữ liệu
+4. **Triển khai dịch vụ Backend**: Triển khai các microservices backend
+5. **Chạy kiểm thử tích hợp**: Chạy kiểm thử tích hợp
+6. **Triển khai Frontend**: Triển khai frontend
+7. **Xác minh triển khai**: Xác minh toàn bộ hệ thống
+8. **Khôi phục (nếu cần)**: Khôi phục lại trạng thái trước nếu có lỗi
 
-Scenario 1: Successful Deployment (2 minutes)
-├── Trigger deployment via AWS Console
-├── Show Step Functions visual execution
-├── Demonstrate real-time logging
-└── Confirm service health status
-
-Scenario 2: Failure & Recovery (2 minutes)  
-├── Simulate service failure
-├── Show automatic error detection
-├── Demonstrate rollback process
-└── Confirm system restoration
-
-Scenario 3: Performance Comparison (1 minute)
-├── Show manual process timeline
-├── Show automated process timeline  
-├── Highlight time savings
-└── Calculate cost impact
-```
-
-#### Step 3: Technical Constraints (2 phút)
-```markdown
-Prototype Limitations:
-- Use mock services instead của real microservices
-- Simplified error scenarios
-- Basic monitoring (no custom dashboards)
-- Single environment only
-- Manual triggers only
-
-Production Requirements:
-- Full CI/CD integration
-- Comprehensive error handling
-- Advanced monitoring và alerting
-- Multi-environment deployment
-- Automated triggers
-```
-
-## Quick Implementation Session (15 phút)
-
-**📸 IMAGE NEEDED: Development Environment Setup**
-*Chụp VS Code workspace với project structure, terminal, và AWS toolkit*
-
-### Implementation Checklist:
-
-#### Step 1: Project Structure Setup (3 phút)
-```bash
-# Create project structure
-mkdir restaurant-deployment-proposal
-cd restaurant-deployment-proposal
-
-# Create directories
-mkdir lambda_functions
-mkdir step_functions  
-mkdir config
-mkdir tests
-mkdir docs
-
-# Create core files
-touch lambda_functions/deployment_initializer.py
-touch lambda_functions/health_checker.py
-touch lambda_functions/notification_sender.py
-touch step_functions/deployment_workflow.json
-touch config/services.yaml
-touch requirements.txt
-touch README.md
-```
-
-#### Step 2: Lambda Function Implementation (5 phút)
-
-**📸 IMAGE NEEDED: Code Editor Screenshot**
-*Chụp VS Code với Python code cho Lambda function*
-
-```python
-# lambda_functions/deployment_initializer.py
-import json
-import boto3
-import logging
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-def lambda_handler(event, context):
-    """
-    Initialize deployment process cho restaurant microservices
-    """
-    try:
-        # Extract deployment parameters
-        services = event.get('services', [])
-        environment = event.get('environment', 'dev')
-        
-        logger.info(f"Starting deployment for services: {services}")
-        logger.info(f"Target environment: {environment}")
-        
-        # Mock deployment initialization
-        result = {
-            'deployment_id': f"deploy-{context.aws_request_id}",
-            'services': services,
-            'environment': environment,
-            'status': 'initialized',
-            'timestamp': context.get_remaining_time_in_millis()
-        }
-        
-        return {
-            'statusCode': 200,
-            'body': json.dumps(result)
-        }
-        
-    except Exception as e:
-        logger.error(f"Deployment initialization failed: {str(e)}")
-        return {
-            'statusCode': 500,
-            'body': json.dumps({'error': str(e)})
-        }
-```
-
-#### Step 3: Step Functions Definition (4 phút)
-
-**📸 IMAGE NEEDED: Step Functions Visual Editor**
-*Chụp AWS Console Step Functions visual workflow editor*
+Sử dụng giao diện kéo thả để tạo workflow như sau:
 
 ```json
 {
-  "Comment": "Restaurant Microservices Deployment Prototype",
-  "StartAt": "InitializeDeployment",
+  "Comment": "Quy trình điều phối triển khai Microservices",
+  "StartAt": "ValidateInput",
   "States": {
-    "InitializeDeployment": {
+    "ValidateInput": {
       "Type": "Task",
-      "Resource": "arn:aws:lambda:us-east-1:ACCOUNT:function:deployment-initializer",
-      "Next": "CheckServiceHealth",
-      "Retry": [
-        {
-          "ErrorEquals": ["States.TaskFailed"],
-          "IntervalSeconds": 5,
-          "MaxAttempts": 3,
-          "BackoffRate": 2.0
-        }
-      ]
-    },
-    "CheckServiceHealth": {
-      "Type": "Task", 
-      "Resource": "arn:aws:lambda:us-east-1:ACCOUNT:function:health-checker",
-      "Next": "SendNotification",
+      "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:ValidateInputFunction",
+      "Next": "BackupCurrentState",
       "Catch": [
         {
-          "ErrorEquals": ["States.ALL"],
-          "Next": "HandleFailure"
+          "ErrorEquals": ["ValidationError"],
+          "Next": "DeploymentFailed"
         }
       ]
     },
-    "SendNotification": {
+    "BackupCurrentState": {
       "Type": "Task",
-      "Resource": "arn:aws:lambda:us-east-1:ACCOUNT:function:notification-sender",
-      "End": true
+      "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:BackupStateFunction",
+      "Next": "DeployDatabaseChanges",
+      "Catch": [
+        {
+          "ErrorEquals": ["BackupError"],
+          "Next": "DeploymentFailed"
+        }
+      ]
     },
-    "HandleFailure": {
+    "DeployDatabaseChanges": {
       "Type": "Task",
-      "Resource": "arn:aws:lambda:us-east-1:ACCOUNT:function:notification-sender",
-      "End": true
+      "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:DeployDBFunction",
+      "Next": "DeployBackendServices",
+      "Catch": [
+        {
+          "ErrorEquals": ["DBDeployError"],
+          "Next": "RollbackChanges"
+        }
+      ]
+    },
+    "DeployBackendServices": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "DeployAuthService",
+          "States": {
+            "DeployAuthService": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:DeployAuthServiceFunction",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "DeployOrderService",
+          "States": {
+            "DeployOrderService": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:DeployOrderServiceFunction",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "DeployInventoryService",
+          "States": {
+            "DeployInventoryService": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:DeployInventoryServiceFunction",
+              "End": true
+            }
+          }
+        }
+      ],
+      "Next": "RunIntegrationTests",
+      "Catch": [
+        {
+          "ErrorEquals": ["ServiceDeployError"],
+          "Next": "RollbackChanges"
+        }
+      ]
+    },
+    "RunIntegrationTests": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:RunTestsFunction",
+      "Next": "DeployFrontend",
+      "Catch": [
+        {
+          "ErrorEquals": ["TestFailedError"],
+          "Next": "RollbackChanges"
+        }
+      ]
+    },
+    "DeployFrontend": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:DeployFrontendFunction",
+      "Next": "VerifyDeployment",
+      "Catch": [
+        {
+          "ErrorEquals": ["FrontendDeployError"],
+          "Next": "RollbackChanges"
+        }
+      ]
+    },
+    "VerifyDeployment": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VerifyDeploymentFunction",
+      "Next": "DeploymentSucceeded",
+      "Catch": [
+        {
+          "ErrorEquals": ["VerificationError"],
+          "Next": "RollbackChanges"
+        }
+      ]
+    },
+    "RollbackChanges": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:RollbackFunction",
+      "Next": "DeploymentFailed"
+    },
+    "DeploymentSucceeded": {
+      "Type": "Succeed"
+    },
+    "DeploymentFailed": {
+      "Type": "Fail",
+      "Error": "DeploymentError",
+      "Cause": "Triển khai thất bại, xem nhật ký thực thi để biết chi tiết"
     }
   }
 }
 ```
 
-#### Step 4: Configuration Files (3 phút)
-```yaml
-# config/services.yaml
-services:
-  auth_service:
-    name: "restaurant-auth-service"
-    health_endpoint: "/health"
-    deployment_timeout: 300
-    rollback_timeout: 120
-    
-  order_service:
-    name: "restaurant-order-service"  
-    health_endpoint: "/api/health"
-    deployment_timeout: 180
-    rollback_timeout: 90
-    dependencies: ["auth_service"]
-    
-  payment_service:
-    name: "restaurant-payment-service"
-    health_endpoint: "/health/status"
-    deployment_timeout: 240
-    rollback_timeout: 100
-    dependencies: ["auth_service", "order_service"]
-    
-  notification_service:
-    name: "restaurant-notification-service"
-    health_endpoint: "/status"
-    deployment_timeout: 120
-    rollback_timeout: 60
-    dependencies: ["order_service"]
+![Sơ đồ Step Functions](/images/prototype/step-functions-workflow.png)
 
-environments:
-  dev:
-    cluster: "restaurant-dev-cluster"
-    region: "us-east-1"
+### Bước 4: Tạo và Lưu State Machine
+
+1. Nhấp vào nút "Create state machine"
+2. Xác nhận IAM role cho state machine (tạo role mới hoặc sử dụng role hiện có)
+3. Nhấp vào "Create state machine" để hoàn tất
+
+## 2. Tạo Lambda Functions
+
+Bây giờ chúng ta cần tạo các Lambda functions được tham chiếu trong state machine. Chúng ta sẽ tạo một function làm ví dụ:
+
+### Tạo ValidateInputFunction
+
+1. Truy cập AWS Lambda console
+2. Nhấp vào "Create function"
+3. Chọn "Author from scratch"
+4. Nhập thông tin:
+   - Function name: `ValidateInputFunction`
+   - Runtime: Node.js 14.x
+   - Architecture: x86_64
+   - Permissions: Tạo role mới với quyền Lambda cơ bản
+5. Nhấp vào "Create function"
+
+![Tạo Lambda Function](/images/prototype/create-lambda.png)
+
+6. Trong phần code editor, thay thế code mặc định bằng:
+
+```javascript
+exports.handler = async (event) => {
+    console.log('Đang xác thực tham số triển khai:', JSON.stringify(event));
     
-  staging:
-    cluster: "restaurant-staging-cluster" 
-    region: "us-east-1"
+    // Kiểm tra các tham số bắt buộc
+    if (!event.version || !event.services || !event.environment) {
+        throw new Error('ValidationError: Thiếu tham số bắt buộc');
+    }
     
-  prod:
-    cluster: "restaurant-prod-cluster"
-    region: "us-east-1"
+    // Kiểm tra môi trường hợp lệ
+    const validEnvironments = ['dev', 'staging', 'production'];
+    if (!validEnvironments.includes(event.environment)) {
+        throw new Error('ValidationError: Môi trường không hợp lệ');
+    }
+    
+    // Kiểm tra các dịch vụ cần triển khai
+    const validServices = ['auth', 'order', 'inventory', 'frontend'];
+    for (const service of event.services) {
+        if (!validServices.includes(service)) {
+            throw new Error(`ValidationError: Dịch vụ không hợp lệ: ${service}`);
+        }
+    }
+    
+    // Trả về input đã được xác thực
+    return {
+        ...event,
+        timestamp: new Date().toISOString(),
+        validationPassed: true
+    };
+};
 ```
 
-## Demo Environment Setup (7 phút)
+7. Nhấp vào "Deploy" để lưu function
 
-**📸 IMAGE NEEDED: AWS Console Deployment Process**
-*Chụp sequence of screenshots: Lambda upload → Step Functions creation → Test execution*
+### Tạo các Lambda Functions khác
 
-### Deployment Checklist:
+Lặp lại các bước tương tự để tạo các Lambda functions còn lại được tham chiếu trong state machine. Mỗi function sẽ thực hiện một nhiệm vụ cụ thể trong quy trình triển khai.
 
-#### Step 1: Lambda Functions Deployment (3 phút)
-```bash
-# Package Lambda functions
-cd lambda_functions
-zip deployment-initializer.zip deployment_initializer.py
-zip health-checker.zip health_checker.py
-zip notification-sender.zip notification_sender.py
+## 3. Kiểm thử Workflow
 
-# Deploy via AWS CLI (or console)
-aws lambda create-function \
-  --function-name deployment-initializer \
-  --runtime python3.9 \
-  --role arn:aws:iam::ACCOUNT:role/lambda-execution-role \
-  --handler deployment_initializer.lambda_handler \
-  --zip-file fileb://deployment-initializer.zip
+### Bước 1: Chạy thử State Machine
 
-# Repeat for other functions...
-```
-
-#### Step 2: Step Functions State Machine Creation (2 phút)
-```bash
-# Create state machine
-aws stepfunctions create-state-machine \
-  --name restaurant-deployment-prototype \
-  --definition file://step_functions/deployment_workflow.json \
-  --role-arn arn:aws:iam::ACCOUNT:role/stepfunctions-execution-role
-```
-
-#### Step 3: Test Execution Preparation (2 phút)
-
-**📸 IMAGE NEEDED: Test Input JSON**
-*Chụp AWS Console test input field với sample deployment parameters*
+1. Quay lại AWS Step Functions console
+2. Chọn state machine `MicroservicesDeploymentOrchestrator` của bạn
+3. Nhấp vào "Start execution"
+4. Nhập JSON input sau:
 
 ```json
 {
-  "services": [
-    "auth_service",
-    "order_service" 
-  ],
+  "version": "1.0.0",
   "environment": "dev",
-  "deployment_strategy": "sequential",
-  "notification_channels": [
-    "email",
-    "slack"
-  ]
+  "services": ["auth", "order", "inventory", "frontend"],
+  "rollbackOnFailure": true,
+  "notifyOnCompletion": true,
+  "notificationEmail": "admin@example.com"
 }
-``` 
+```
+
+5. Nhấp vào "Start execution"
+
+### Bước 2: Theo dõi thực thi
+
+1. Quan sát quá trình thực thi trực quan trên giao diện Step Functions
+2. Kiểm tra từng bước để đảm bảo chúng thực thi đúng
+3. Xem logs của từng Lambda function để debug nếu cần
+
+![Trực quan hóa thực thi](/images/prototype/execution-visualization.png)
+
+## 4. Tích hợp với CI/CD Pipeline
+
+Để tích hợp workflow này vào CI/CD pipeline, chúng ta có thể sử dụng AWS CodePipeline:
+
+1. Tạo một CodePipeline mới
+2. Cấu hình source stage (ví dụ: GitHub, CodeCommit)
+3. Thêm stage để gọi Step Functions state machine
+4. Cấu hình các thông báo và cổng phê duyệt
+
+## 5. Tạo API Gateway để kích hoạt Workflow
+
+Để kích hoạt workflow từ bên ngoài:
+
+1. Tạo một API trong API Gateway
+2. Tạo một resource và method (POST /deploy)
+3. Tích hợp với Step Functions state machine
+4. Triển khai API và kiểm thử
+
+## Tổng kết
+
+Trong phần này, chúng ta đã:
+
+1. Tạo một Step Functions state machine để điều phối quy trình triển khai microservices
+2. Phát triển các Lambda functions để thực hiện các nhiệm vụ cụ thể
+3. Kiểm thử workflow để đảm bảo nó hoạt động đúng
+4. Tìm hiểu cách tích hợp với CI/CD pipeline và API Gateway
+
+Prototype này chứng minh tính khả thi của giải pháp tự động hóa triển khai microservices, giúp giảm thời gian triển khai từ hàng giờ xuống còn vài phút và giảm thiểu lỗi do con người.
+
+Trong phần tiếp theo, chúng ta sẽ xây dựng business case để thuyết phục các bên liên quan về giá trị của giải pháp này. 

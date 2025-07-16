@@ -1,138 +1,53 @@
 ---
-title: "2. Requirements Analysis & Problem Definition"
+title: "2. Chuẩn bị"
 date: 2023-07-12T11:02:05+06:00
 weight: 20
 chapter: false
 ---
 
-## Learning Objective
-Học cách thu thập và document business requirements từ stakeholders để build compelling business case.
+## Tổng quan về Yêu cầu
 
-## Stakeholder Interview Simulation (5 phút)
+Trong phần này, chúng ta sẽ phân tích các yêu cầu kinh doanh và kỹ thuật cho hệ thống tự động hóa triển khai microservices. Mục tiêu là xác định rõ ràng các yêu cầu chức năng và phi chức năng, các bên liên quan, và các chỉ số thành công.
 
-**📸 IMAGE NEEDED: Stakeholder Personas**
-*Chụp slide với 3 persona cards showing CTO, Operations Manager, CFO với their key concerns*
+## Nội dung
 
-### Setup Role-play Exercise:
-```markdown
-Instructor Setup:
-1. Chia nhóm thành 3 teams: Business Analysts, Stakeholders, Observers
-2. Provide stakeholder persona cards
-3. Set timer cho mỗi interview session (1.5 phút each)
-4. Record key requirements on whiteboard
-```
+1. [Chuẩn bị môi trường local](2.1-create-cloud9-instance/)
+2. [Cấu hình AWS CLI](2.2-create-sample-services/)
+3. [Cấu hình AWS IAM](2.3-verify-sample-services/)
+4. [Tạo IAM Role cho Lambda Functions](2.4-account-application/)
+5. [Data Checking](2.5-data-checking/)
 
-### CTO Persona - Technical Requirements
-```
-"We need a solution that can:
-- Deploy 4 microservices (auth, order, payment, notification) reliably
-- Handle dependency management automatically  
-- Provide rollback capability within 2 minutes
-- Support multi-environment deployments (dev, staging, prod)
-- Integrate with our existing CI/CD pipeline"
+## Yêu cầu Kỹ thuật
 
-Questions to ask:
-- What's the current failure rate?
-- How often do you deploy?
-- What's the impact of deployment downtime?
-- What compliance requirements do we have?
-```
+### Yêu cầu Chức năng
+1. **Tự động hóa Triển khai**
+   - Tự động hóa toàn bộ quy trình triển khai từ commit đến production
+   - Hỗ trợ triển khai theo môi trường (dev, staging, production)
+   - Cho phép triển khai từng phần hoặc toàn bộ hệ thống
 
-### Operations Manager Persona - Operational Requirements
-```
-"Current pain points include:
-- 2-3 staff members tied up for 4 hours per deployment
-- Weekend deployment windows impact customer service
-- Manual coordination errors cause system outages
-- No visibility into deployment progress or issues"
+2. **Quản lý Phụ thuộc**
+   - Phát hiện và quản lý phụ thuộc giữa các microservices
+   - Đảm bảo thứ tự triển khai chính xác
+   - Xử lý các thay đổi schema cơ sở dữ liệu
 
-Questions to ask:
-- How many people involved in current process?
-- What's the cost of deployment windows?
-- What monitoring tools do you currently use?
-- What training would your team need?
-```
+3. **Kiểm thử và Xác thực**
+   - Tự động chạy kiểm thử đơn vị và tích hợp
+   - Xác thực tính sẵn sàng của dịch vụ sau khi triển khai
+   - Cung cấp báo cáo kiểm thử chi tiết
 
-### CFO Persona - Business Requirements
-```
-"Show me numbers. Current deployments cost us:
-- Developer overtime: $2,000 per deployment
-- Weekend premium pay: $1,500 per deployment  
-- Lost revenue during downtime: $5,000 per incident
-- Customer service complaints: $500 per incident
+4. **Khôi phục và Xử lý Lỗi**
+   - Khôi phục tự động khi phát hiện lỗi
+   - Ghi nhật ký chi tiết về lỗi và hành động khôi phục
+   - Thông báo cho các bên liên quan về sự cố
 
-We deploy 26 times per year. I need to see clear ROI
-within 12 months và operational cost reduction."
+5. **Giám sát và Báo cáo**
+   - Giám sát thời gian thực trạng thái triển khai
+   - Cung cấp bảng điều khiển trực quan
+   - Tạo báo cáo về lịch sử triển khai và hiệu suất
 
-Questions to ask:
-- What's the budget range for this project?
-- What ROI percentage would be acceptable?
-- Are there compliance costs to consider?
-- How do you measure business impact?
-```
 
-## Requirements Documentation Workshop (10 phút)
+## Kết luận
 
-**📸 IMAGE NEEDED: Requirements Gathering Template**
-*Chụp Google Sheets template với columns for Requirement ID, Description, Source, Priority, Acceptance Criteria*
+Dựa trên phân tích yêu cầu, chúng ta đã xác định được nhu cầu rõ ràng về hệ thống tự động hóa triển khai microservices. Hệ thống này sẽ giải quyết các thách thức hiện tại về thời gian triển khai, độ tin cậy, và khả năng mở rộng. Các chỉ số thành công đã được xác định để đánh giá hiệu quả của giải pháp.
 
-### Hands-on Exercise: Requirements Matrix Creation
-
-#### Step 1: Functional Requirements (3 phút)
-```markdown
-Participants sẽ fill out template:
-
-| ID | Requirement | Stakeholder | Priority | Acceptance Criteria |
-|----|-------------|-------------|----------|-------------------|
-| FR-001 | Automated deployment | CTO | Critical | Deploy all 4 services in <10 min |
-| FR-002 | Dependency management | CTO | Critical | Auto-resolve service dependencies |
-| FR-003 | Rollback capability | CTO | Critical | Rollback within 2 minutes |
-| FR-004 | Health monitoring | Ops | High | Real-time service health status |
-| FR-005 | Multi-environment | Ops | Medium | Support dev/staging/prod |
-| FR-006 | Cost tracking | CFO | High | Detailed cost breakdown per deployment |
-
-Add more requirements based on interview notes...
-```
-
-#### Step 2: Non-Functional Requirements (3 phút)
-```markdown
-| Category | Current State | Target State | Business Impact |
-|----------|---------------|-------------|-----------------|
-| Performance | 4 hours deployment | <10 minutes | $156K annual savings |
-| Reliability | 70% success rate | 98% success rate | Reduce incidents by 95% |
-| Availability | 95% uptime | 99.9% uptime | $65K reduced downtime costs |
-| Scalability | 1 concurrent deployment | 10+ concurrent | Support business growth |
-| Security | Manual approvals | Automated with audit | Compliance requirement |
-```
-
-#### Step 3: Requirements Prioritization (2 phút)
-```markdown
-Priority Framework:
-Critical: Must have for MVP (deal breakers)
-High: Should have for launch  
-Medium: Nice to have for v1.1
-Low: Future consideration
-
-Participants vote on each requirement using dot stickers:
-🔴 Critical
-🟡 High  
-🟢 Medium
-⚪ Low
-```
-
-#### Step 4: Constraints & Assumptions (2 phút)
-```markdown
-Document key constraints:
-- Budget: $150K maximum
-- Timeline: 16 weeks
-- Team: 3 developers, 1 ops engineer
-- Technology: Must use AWS
-- Compliance: SOC 2 Type II required
-- Integration: Must work with existing CI/CD
-
-Document assumptions:
-- Current AWS infrastructure available
-- Team has basic AWS knowledge
-- No major org changes during project
-- Stakeholder availability for testing
-``` 
+Trong phần tiếp theo, chúng ta sẽ thiết kế kiến trúc giải pháp dựa trên các yêu cầu này. 
