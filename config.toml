@@ -1,4 +1,4 @@
-baseURL = "https://USERNAME.github.io/REPOSITORY-NAME/"
+baseURL = "https://USERNAME.github.io"
 languageCode = "en-us"
 defaultContentLanguage = "en"
 
