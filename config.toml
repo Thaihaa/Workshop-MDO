@@ -51,7 +51,7 @@ languageName = "English"
 [[Languages.en.menu.shortcuts]]
 name = "<i class='fab fa-github'></i> GitHub Repo"
 identifier = "ds"
-url = "https://github.com/aws-samples/restaurant-deployment-workshop"
+url = "https://github.com/Thaihaa/Workshop-MDO"
 weight = 10
 
 [[Languages.en.menu.shortcuts]]

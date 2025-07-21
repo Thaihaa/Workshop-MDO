@@ -34,12 +34,7 @@ Sau khi hoàn thành workshop này, bạn sẽ có thể:
 - **Khả năng mở rộng hạn chế**: Không thể xử lý hiệu quả nhiều địa điểm nhà hàng
 - **Khả năng giám sát kém**: Không có khả năng giám sát thời gian thực hoặc khôi phục
 
-### **Giá trị đề xuất của giải pháp**
-- **Tự động hóa**: Giảm thời gian triển khai từ 4 giờ xuống 6 phút (cải thiện 98%)
-- **Không thời gian ngừng hoạt động**: Triển khai liên tục với khôi phục tự động
-- **Khả năng mở rộng**: Hỗ trợ đồng thời 100+ địa điểm nhà hàng  
-- **Tiết kiệm chi phí**: 240.000$ hàng năm về hiệu quả hoạt động
-- **Giảm rủi ro**: Giảm 95% sự cố liên quan đến triển khai
+
 
 ## Cấu trúc & Phương pháp Workshop
 

@@ -1,5 +1,5 @@
 ---
-title: "3. Kiến trúc Giải pháp"
+title: "3. AWS Step Functions"
 date: 2023-07-12T11:02:05+06:00
 weight: 30
 chapter: false
@@ -19,7 +19,7 @@ Trong phần này, chúng ta sẽ thiết kế kiến trúc giải pháp cho h�
 
 ## Kiến trúc Tổng thể
 
-![Kiến trúc Tổng thể](/images/architecture/high-level-architecture.png)
+![Kiến trúc Tổng thể](/images/3/step-functions-arch.png)
 
 Kiến trúc giải pháp bao gồm các thành phần chính sau:
 
@@ -76,7 +76,7 @@ Kiến trúc giải pháp bao gồm các thành phần chính sau:
 
 ## Quy trình Triển khai
 
-![Quy trình Triển khai](/images/architecture/deployment-workflow.png)
+
 
 Quy trình triển khai tự động hóa bao gồm các bước sau:
 
@@ -91,7 +91,7 @@ Quy trình triển khai tự động hóa bao gồm các bước sau:
 
 ## Xử lý Lỗi và Khôi phục
 
-![Xử lý Lỗi](/images/architecture/error-handling.png)
+
 
 Chiến lược xử lý lỗi và khôi phục bao gồm:
 
@@ -122,21 +122,6 @@ Các biện pháp bảo mật được tích hợp vào kiến trúc bao gồm:
 4. **Kiểm tra Bảo mật**: Quét bảo mật tự động trong pipeline CI/CD
 5. **Ghi nhật ký và Giám sát**: CloudTrail và CloudWatch để theo dõi hoạt động
 
-## Ước tính Chi phí
-
-Ước tính chi phí hàng tháng cho giải pháp:
-
-| Dịch vụ AWS | Ước tính Chi phí (USD) | Ghi chú |
-|-------------|------------------------|---------|
-| AWS CodePipeline | $1 mỗi pipeline/tháng | 5 pipelines = $5 |
-| AWS Step Functions | $0.025 mỗi 1,000 chuyển đổi trạng thái | ~$10 với 50 triển khai/tháng |
-| AWS Lambda | $0.20 mỗi 1M yêu cầu + $0.0000166667 mỗi GB-giây | ~$15 |
-| Amazon ECS/EKS | Phụ thuộc vào kích thước cluster | ~$100 cho cluster nhỏ |
-| CloudWatch | $0.30 mỗi bảng điều khiển + chi phí nhật ký | ~$30 |
-| Các dịch vụ khác | | ~$40 |
-| **Tổng cộng** | | **~$200/tháng** |
-
-Lưu ý: Chi phí thực tế có thể thay đổi dựa trên khối lượng sử dụng và cấu hình cụ thể.
 
 ## Lộ trình Triển khai
 
@@ -162,10 +147,7 @@ Lộ trình triển khai giải pháp được chia thành các giai đoạn:
 - Kiểm thử end-to-end
 - Tối ưu hóa hiệu suất
 
-### Giai đoạn 5: Triển khai và Đào tạo (2 tuần)
-- Triển khai giải pháp vào môi trường sản xuất
-- Đào tạo đội ngũ phát triển và vận hành
-- Bàn giao tài liệu
+
 
 ## Kết luận
 
