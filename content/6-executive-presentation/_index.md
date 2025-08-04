@@ -1,5 +1,5 @@
 ---
-title: "6. Xử lý sự cố và Tối ưu hóa"
+title: "6. Deployment trên project"
 date: 2023-07-12T11:02:05+06:00
 weight: 60
 chapter: false
@@ -7,9 +7,9 @@ chapter: false
 
 ## Mục lục
 
-- [6.1 Các lỗi thường gặp](6.1-common-errors.md)
-- [6.2 Disaster Recovery](6.2-disaster-recovery.md)
-- [6.3 Performance Optimization](6.3-performance-optimization.md)
+- [6.1 Khởi chạy Deployment từ Command Line](6.1-common-errors.md)
+- [6.2 Theo dõi Execution trên AWS Console](6.2-disaster-recovery.md)
+- [6.3 Kiểm tra Lambda Functions trên AWS Console](6.3-performance-optimization.md)
 
 ## Tổng quan
 
