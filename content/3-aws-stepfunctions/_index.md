@@ -19,7 +19,7 @@ Trong phần này, chúng ta sẽ thiết kế kiến trúc giải pháp cho h�
 
 ## Kiến trúc Tổng thể
 
-![Kiến trúc Tổng thể](/images/3/step-functions-arch.png)
+![Kiến trúc Tổng thể](/Workshop-MDO/images/3/step-functions-arch.png)
 
 Kiến trúc giải pháp bao gồm các thành phần chính sau:
 
